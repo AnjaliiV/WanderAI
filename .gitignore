@@ -1,0 +1,23 @@
+# Environment — NEVER commit secrets
+.env
+firebase-service-account.json
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Uploads (user-submitted photos)
+public/uploads/

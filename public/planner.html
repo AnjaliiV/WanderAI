@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Your Trip — WanderAI Trip Planner</title>
+  <meta name="description" content="Plan your perfect trip with AI. Enter your destination, dates, and budget. Get a complete itinerary, packing list, transport options, and scenic photo spots.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/planner.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-logo"><span class="logo-icon">🌍</span><span>WanderAI</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/planner.html" class="active">Plan a Trip</a>
+      <a href="/explore.html">Explore</a>
+      <a href="/community.html">Community</a>
+      <a href="/login.html">Sign In</a>
+    </div>
+  </div>
+</nav>
+
+<div class="planner-page">
+
+  <!-- Header -->
+  <div class="planner-header">
+    <div class="planner-header-inner container">
+      <h1>🗺️ AI Trip Planner</h1>
+      <p>Enter any destination — from Goa to the remote village of Chitkul</p>
+      <div class="step-indicators">
+        <div class="step-ind active" data-step="form">
+          <div class="step-ind-num">1</div>
+          <span>Trip Details</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-ind" data-step="loading">
+          <div class="step-ind-num">2</div>
+          <span>AI Planning</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: FORM ─────────────────────────────────────── -->
+  <div id="step-form" class="planner-form-section">
+    <div class="container">
+      <form class="planner-form-card" id="planner-form">
+
+        <!-- Destination -->
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <span>📍 Where to?</span>
+            <span class="step-tag">Step 1 of 2</span>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label class="form-label" for="dest-input">Destination</label>
+            <div class="dest-search-wrapper">
+              <span class="dest-input-icon">🔍</span>
+              <input
+                type="text"
+                class="form-input dest-input"
+                id="dest-input"
+                placeholder="e.g. Jibhi, Chitkul, Goa, Munnar..."
+                autocomplete="off"
+                required
+              >
+              <div class="dest-dropdown" id="dest-dropdown"></div>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="dates-row">
+            <div class="form-group">
+              <label class="form-label" for="start-date">Start Date</label>
+              <input type="date" class="form-input" id="start-date" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="end-date">End Date</label>
+              <input type="date" class="form-input" id="end-date" required>
+            </div>
+          </div>
+
+          <!-- Origin -->
+          <div class="form-group">
+            <label class="form-label" for="origin-input">Your Starting City</label>
+            <input type="text" class="form-input" id="origin-input" placeholder="e.g. Delhi, Mumbai, Bangalore..." required>
+            <div class="origin-hint">Enter your home city to get real transport options with time and cost estimates.</div>
+          </div>
+
+          <!-- Travelers Type -->
+          <div class="form-group">
+            <label class="form-label">Travelers</label>
+            <div class="travelers-grid">
+              <div class="traveler-option selected" data-value="solo">
+                <div class="traveler-option-icon">🧑</div>
+                <div class="traveler-option-label">Solo</div>
+              </div>
+              <div class="traveler-option" data-value="couple">
+                <div class="traveler-option-icon">👫</div>
+                <div class="traveler-option-label">Couple</div>
+              </div>
+              <div class="traveler-option" data-value="family">
+                <div class="traveler-option-icon">👨‍👩‍👧</div>
+                <div class="traveler-option-label">Family</div>
+              </div>
+              <div class="traveler-option" data-value="group">
+                <div class="traveler-option-icon">👥</div>
+                <div class="traveler-option-label">Group</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Traveler count -->
+          <div class="form-group">
+            <label class="form-label" for="travelers-count">Number of People</label>
+            <input type="number" class="form-input" id="travelers-count" min="1" max="20" value="1" style="max-width:120px;">
+          </div>
+
+          <!-- Trip Type -->
+          <div class="form-group">
+            <label class="form-label">Trip Type</label>
+            <div class="trip-type-grid">
+              <div class="trip-type-option selected" data-value="adventure">
+                <div class="trip-type-icon">🧗</div>
+                <div class="trip-type-label">Adventure</div>
+              </div>
+              <div class="trip-type-option" data-value="relaxation">
+                <div class="trip-type-icon">🏖️</div>
+                <div class="trip-type-label">Relaxation</div>
+              </div>
+              <div class="trip-type-option" data-value="cultural">
+                <div class="trip-type-icon">🕌</div>
+                <div class="trip-type-label">Cultural</div>
+              </div>
+              <div class="trip-type-option" data-value="food">
+                <div class="trip-type-icon">🍛</div>
+                <div class="trip-type-label">Food Tour</div>
+              </div>
+              <div class="trip-type-option" data-value="budget">
+                <div class="trip-type-icon">💰</div>
+                <div class="trip-type-label">Budget</div>
+              </div>
+              <div class="trip-type-option" data-value="luxury">
+                <div class="trip-type-icon">👑</div>
+                <div class="trip-type-label">Luxury</div>
+              </div>
+              <div class="trip-type-option" data-value="spiritual">
+                <div class="trip-type-icon">🕍</div>
+                <div class="trip-type-label">Spiritual</div>
+              </div>
+              <div class="trip-type-option" data-value="wildlife">
+                <div class="trip-type-icon">🦁</div>
+                <div class="trip-type-label">Wildlife</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Budget -->
+          <div class="form-group">
+            <label class="form-label">Total Budget (₹)</label>
+            <div class="budget-slider-wrapper">
+              <div class="budget-display" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>₹2,000</span>
+                <input type="number" id="budget-input-box" class="form-input" style="width:120px; text-align:center; font-weight:bold; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:var(--text); padding:0.4rem;" min="2000" max="200000" step="1000" value="25000">
+                <span>₹2,00,000</span>
+              </div>
+              <input type="range" class="range-slider" id="budget-slider" min="2000" max="200000" step="1000" value="25000">
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="form-submit-row">
+            <button type="submit" class="btn btn-primary btn-lg" id="plan-submit-btn">
+              🗺️ Generate My Trip Plan
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: LOADING ───────────────────────────────────── -->
+  <div id="step-loading" class="planner-form-section hidden">
+    <div class="container">
+      <div class="planner-loading">
+        <div class="loading-icon">🌍</div>
+        <div class="loading-title">Building Your Trip Plan...</div>
+        <div class="loading-subtitle">We're fetching real places, routes and weather data for you.</div>
+        <div class="loading-steps">
+          <div class="loading-step" id="ls-1">
+            <span class="loading-step-icon">🔍</span>
+            <span>Discovering destination...</span>
+          </div>
+          <div class="loading-step" id="ls-2">
+            <span class="loading-step-icon">📍</span>
+            <span>Finding nearby attractions & hotels...</span>
+          </div>
+          <div class="loading-step" id="ls-3">
+            <span class="loading-step-icon">🛣️</span>
+            <span>Calculating transport routes...</span>
+          </div>
+          <div class="loading-step" id="ls-4">
+            <span class="loading-step-icon">🌤️</span>
+            <span>Fetching weather forecast...</span>
+          </div>
+          <div class="loading-step" id="ls-5">
+            <span class="loading-step-icon">🤖</span>
+            <span>AI personalizing your itinerary...</span>
+          </div>
+          <div class="loading-step" id="ls-6">
+            <span class="loading-step-icon">✅</span>
+            <span>Validating & finalizing plan...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: RESULTS ───────────────────────────────────── -->
+  <div id="step-results" class="hidden">
+
+    <!-- Sticky Tab Nav -->
+    <nav class="plan-nav">
+      <div class="plan-nav-inner">
+        <button class="plan-tab active" data-section="section-overview"><span class="plan-tab-icon">📍</span> Overview</button>
+        <button class="plan-tab" data-section="section-weather"><span class="plan-tab-icon">🌤️</span> Weather</button>
+        <button class="plan-tab" data-section="section-transport"><span class="plan-tab-icon">🚗</span> Transport</button>
+        <button class="plan-tab" data-section="section-itinerary"><span class="plan-tab-icon">📅</span> Itinerary</button>
+        <button class="plan-tab" data-section="section-map"><span class="plan-tab-icon">🗺️</span> Map</button>
+        <button class="plan-tab" data-section="section-stay"><span class="plan-tab-icon">🏨</span> Stay</button>
+        <button class="plan-tab" data-section="section-food"><span class="plan-tab-icon">🍽️</span> Food</button>
+        <button class="plan-tab" data-section="section-packing"><span class="plan-tab-icon">🎒</span> Pack</button>
+        <button class="plan-tab" data-section="section-scenic"><span class="plan-tab-icon">📸</span> Photos</button>
+        <button class="plan-tab" data-section="section-budget"><span class="plan-tab-icon">💰</span> Budget</button>
+        <button class="plan-tab" data-section="section-safety"><span class="plan-tab-icon">🛡️</span> Safety</button>
+        <button class="plan-tab" data-section="section-gems"><span class="plan-tab-icon">💎</span> Hidden Gems</button>
+      </div>
+    </nav>
+
+    <div class="plan-results">
+      <div class="container plan-content">
+
+        <!-- Dest Header -->
+        <div id="plan-dest-header" class="plan-dest-header"></div>
+
+        <!-- Overview -->
+        <div class="plan-card plan-section" id="section-overview">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">📍</div>
+            <div class="plan-card-title">Destination Overview</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="overview-content"></div>
+          </div>
+        </div>
+
+        <!-- Weather -->
+        <div class="plan-card plan-section" id="section-weather">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🌤️</div>
+            <div class="plan-card-title">Weather & Forecast</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="weather-content"></div>
+          </div>
+        </div>
+
+        <!-- Transport -->
+        <div class="plan-card plan-section" id="section-transport">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🚗</div>
+            <div class="plan-card-title">How to Get There</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="transport-content"></div>
+          </div>
+        </div>
+
+        <!-- Itinerary -->
+        <div class="plan-card plan-section" id="section-itinerary">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">📅</div>
+            <div class="plan-card-title">Day-by-Day Itinerary</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="itinerary-content"></div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div class="plan-card plan-section" id="section-map">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🗺️</div>
+            <div class="plan-card-title">Interactive Map</div>
+          </div>
+          <div class="plan-card-body" style="padding:0;">
+            <div class="map-container">
+              <div id="plan-map"></div>
+              <div class="map-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#6C63FF;"></div>Attractions</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#06D6A0;"></div>Hotels</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#FF6B6B;"></div>Restaurants</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#FFD166;"></div>Scenic Spots</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accommodation -->
+        <div class="plan-card plan-section" id="section-stay">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🏨</div>
+            <div class="plan-card-title">Where to Stay</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="accommodation-content"></div>
+          </div>
+        </div>
+
+        <!-- Food -->
+        <div class="plan-card plan-section" id="section-food">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🍽️</div>
+            <div class="plan-card-title">Local Food Guide</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="food-content"></div>
+          </div>
+        </div>
+
+        <!-- Packing List -->
+        <div class="plan-card plan-section" id="section-packing">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🎒</div>
+            <div class="plan-card-title">Smart Packing List</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="packing-content"></div>
+          </div>
+        </div>
+
+        <!-- Scenic Spots -->
+        <div class="plan-card plan-section" id="section-scenic">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">📸</div>
+            <div class="plan-card-title">Selfie & Scenic Spots</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="scenic-content"></div>
+          </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="plan-card plan-section" id="section-budget">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">💰</div>
+            <div class="plan-card-title">Budget Breakdown</div>
+          </div>
+          <div class="plan-card-body">
+            <div class="budget-layout">
+              <div class="budget-chart-wrapper">
+                <canvas id="budget-chart"></canvas>
+                <div class="budget-total">
+                  <div class="budget-total-amount">₹0</div>
+                  <div class="budget-total-label">Total</div>
+                </div>
+              </div>
+              <div>
+                <div id="budget-breakdown-list" class="budget-breakdown-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety -->
+        <div class="plan-card plan-section" id="section-safety">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🛡️</div>
+            <div class="plan-card-title">Safety & Emergency Info</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="safety-content"></div>
+          </div>
+        </div>
+
+        <!-- Hidden Gems -->
+        <div class="plan-card plan-section" id="section-gems">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">💎</div>
+            <div class="plan-card-title">Hidden Gems</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="gems-content"></div>
+          </div>
+        </div>
+
+        <!-- Local Phrases -->
+        <div class="plan-card" id="section-phrases">
+          <div class="plan-card-header">
+            <div class="plan-card-icon">🗣️</div>
+            <div class="plan-card-title">Local Phrases</div>
+          </div>
+          <div class="plan-card-body">
+            <div id="phrases-content"></div>
+          </div>
+        </div>
+
+        <!-- Save Trip Banner -->
+        <div class="save-trip-banner">
+          <div>
+            <div class="save-trip-text">✅ Trip Plan Ready!</div>
+            <div class="save-trip-sub">Your plan has been saved. Share it or plan another trip.</div>
+          </div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button class="btn btn-secondary" id="save-trip-btn">💾 Save Trip</button>
+            <button class="btn btn-primary" id="new-plan-btn-2" onclick="document.getElementById('new-plan-btn').click()">✈️ Plan Another Trip</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="/js/firebase-init.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/map.js"></script>
+<script src="/js/budget.js"></script>
+<script src="/js/planner.js"></script>
+
+<script>
+  // Pre-fill destination from URL params
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const dest = params.get('dest');
+    if (dest) {
+      const input = document.getElementById('dest-input');
+      if (input) input.value = decodeURIComponent(dest);
+    }
+
+    // Date configuration
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setFullYear(today.getFullYear() + 5);
+    
+    const fmt = (d) => d.toISOString().split('T')[0];
+    const todayStr = fmt(today);
+    const maxDateStr = fmt(maxDate);
+    
+    const startEl = document.getElementById('start-date');
+    const endEl = document.getElementById('end-date');
+    
+    if (startEl && endEl) {
+      startEl.min = todayStr;
+      startEl.max = maxDateStr;
+      
+      const fixYear = (el) => {
+        if (!el.value) return;
+        const parts = el.value.split('-');
+        let year = parseInt(parts[0], 10);
+        // Fix 2-digit years on blur
+        if (year > 0 && year < 100) {
+          parts[0] = (year + 2000).toString();
+          el.value = parts.join('-');
+        }
+      };
+
+      // Smart auto-advance: only jump when the user finishes typing a full 4-digit modern year
+      startEl.addEventListener('input', () => {
+        if (startEl.value) {
+          const parts = startEl.value.split('-');
+          const year = parseInt(parts[0], 10);
+          
+          if (year >= 2024 && year <= 2100) {
+            endEl.min = startEl.value; // End date can't be before start date
+            if (endEl.value && endEl.value < startEl.value) {
+              endEl.value = ''; // clear if invalid
+            }
+            endEl.focus(); // Jump only when year is fully typed
+          }
+        }
+      });
+
+      startEl.addEventListener('blur', () => fixYear(startEl));
+
+      endEl.addEventListener('blur', () => fixYear(endEl));
+    }
+  })();
+</script>
+</body>
+</html>

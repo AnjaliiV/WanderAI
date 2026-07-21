@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Trip Planner — Plan Your Perfect Journey</title>
+  <meta name="description" content="Plan your perfect trip with AI. Get personalized itineraries, packing lists, real transport routes, weather info, scenic spots and more — for any destination in India and worldwide.">
+  <meta name="keywords" content="AI trip planner, travel planning India, solo travel, itinerary generator, Jibhi, Manali, Goa, hidden gems India">
+  <meta name="referrer" content="no-referrer">
+  <link rel="canonical" href="/">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/landing.css">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AI Trip Planner">
+  <meta property="og:description" content="Plan perfect trips with AI — itineraries, packing lists, transport routes and more.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-logo">
+      <span class="logo-icon">🌍</span>
+      <span>WanderAI</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="active">Home</a>
+      <a href="/planner.html">Plan a Trip</a>
+      <a href="/explore.html">Explore</a>
+      <a href="/community.html">Community</a>
+      <a href="/login.html">Sign In</a>
+    </div>
+    <a href="/planner.html" class="btn-primary btn-sm" id="plan-nav-cta" style="border-radius: var(--radius-md); padding: 0.5rem 1rem; text-decoration: none; display: inline-flex; font-weight: 600;">
+      ✈️ Plan Now
+    </a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-particles"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-inner">
+      <!-- Left -->
+      <div>
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          AI-Powered Real-Data Trip Planning
+        </div>
+
+        <h1 class="hero-title">
+          Plan Your Dream Trip
+          <em>in Minutes</em>
+        </h1>
+
+        <p class="hero-subtitle">
+          From Goa beaches to the last village of Chitkul — get real itineraries, transport routes,
+          weather info, scenic photo spots and packing lists for <strong>any</strong> destination.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="hero-search">
+          <div class="search-box" id="hero-search-box">
+            <div class="search-icon">🔍</div>
+            <input
+              type="text"
+              class="search-input"
+              id="hero-search-input"
+              placeholder="Where do you want to go? (e.g. Jibhi, Goa, Manali...)"
+              autocomplete="off"
+            >
+            <button class="search-btn" id="hero-search-btn">
+              ✈️ Plan Trip
+            </button>
+          </div>
+          <div class="search-dropdown" id="hero-search-dropdown"></div>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">500+</div>
+            <div class="hero-stat-label">Destinations</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">Real Data</div>
+            <div class="hero-stat-label">No Invented Info</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">Free</div>
+            <div class="hero-stat-label">Always</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Floating cards -->
+      <div class="hero-visual">
+        <div class="hero-card hero-card-main">
+          <div class="card-dest-img">
+            <div class="card-dest-img-inner">🏔️</div>
+          </div>
+          <div class="card-dest-name">Jibhi, Himachal Pradesh</div>
+          <div class="card-dest-meta">🗺️ 3-day itinerary • ₹8,000 budget</div>
+        </div>
+        <div class="hero-card hero-card-weather">
+          <div class="card-weather-temp">18°C</div>
+          <div class="card-weather-cond">⛅ Partly cloudy</div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Live weather data</div>
+        </div>
+        <div class="hero-card hero-card-budget">
+          <div class="card-budget-amt">₹12,500</div>
+          <div class="card-budget-label">Estimated budget</div>
+          <div style="font-size:0.7rem;color:var(--text-dim);margin-top:4px;">5 days • Solo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════════════ -->
+<section class="how-it-works section" id="how-it-works">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Simple Process</div>
+      <h2 class="section-title">How WanderAI Works</h2>
+      <p class="section-subtitle">From a simple destination to a complete travel blueprint — in under a minute.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card glass-card reveal">
+        <div class="step-icon">✍️</div>
+        <div class="step-number">1</div>
+        <div class="step-title">Enter Your Trip Details</div>
+        <div class="step-desc">Destination, dates, number of travelers, trip type, and budget. We support any destination — from famous cities to remote villages.</div>
+      </div>
+      <div class="step-card glass-card reveal reveal-delay-2">
+        <div class="step-icon">🤖</div>
+        <div class="step-number">2</div>
+        <div class="step-title">AI Builds Your Plan</div>
+        <div class="step-desc">We fetch real places, routes, weather and accommodation data. Gemini AI personalizes your itinerary — no invented info.</div>
+      </div>
+      <div class="step-card glass-card reveal reveal-delay-3">
+        <div class="step-icon">🗺️</div>
+        <div class="step-number">3</div>
+        <div class="step-title">Explore & Travel</div>
+        <div class="step-desc">View your full plan with interactive map, day-by-day itinerary, packing list, budget breakdown, and scenic photo spots.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     FEATURED DESTINATIONS
+════════════════════════════════════════════════════════════ -->
+<section class="section" id="destinations">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Discover</div>
+      <h2 class="section-title">Featured Destinations</h2>
+      <p class="section-subtitle">From iconic landmarks to hidden valleys — every journey starts with a destination.</p>
+    </div>
+    <div class="destinations-grid" id="featured-destinations">
+      <!-- Loaded dynamically -->
+      <div class="skeleton" style="height:320px;border-radius:var(--radius-lg);"></div>
+      <div class="skeleton" style="height:320px;border-radius:var(--radius-lg);"></div>
+      <div class="skeleton" style="height:320px;border-radius:var(--radius-lg);"></div>
+    </div>
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="/explore.html" class="btn btn-secondary">View All Destinations →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SOLO TRAVEL SPOTLIGHT
+════════════════════════════════════════════════════════════ -->
+<section class="solo-section section" id="solo-travel">
+  <div class="container">
+    <div class="solo-inner">
+      <div>
+        <div class="section-label" style="margin-bottom:1rem;">For Solo Travelers</div>
+        <h2 class="section-title reveal">Plan Your Solo Trip<br><em style="font-style:italic;background:var(--grad-accent);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Fearlessly</em></h2>
+        <p style="color:var(--text-muted);margin-bottom:2rem;" class="reveal">Never traveled alone? WanderAI gives you everything you need — safety tips, solo-friendly stays, local emergency numbers, and community support.</p>
+        <div class="solo-features">
+          <div class="solo-feature glass-card reveal">
+            <div class="solo-feature-icon">🛡️</div>
+            <div>
+              <div class="solo-feature-title">Real Safety Information</div>
+              <div class="solo-feature-desc">Verified emergency numbers, safe areas, and practical solo travel tips for every destination.</div>
+            </div>
+          </div>
+          <div class="solo-feature glass-card reveal reveal-delay-1">
+            <div class="solo-feature-icon">🏡</div>
+            <div>
+              <div class="solo-feature-title">Solo-Friendly Stays</div>
+              <div class="solo-feature-desc">Hostels, guesthouses, and homestays curated for solo travelers — safe, social, and affordable.</div>
+            </div>
+          </div>
+          <div class="solo-feature glass-card reveal reveal-delay-2">
+            <div class="solo-feature-icon">🗺️</div>
+            <div>
+              <div class="solo-feature-title">Step-by-Step Route</div>
+              <div class="solo-feature-desc">Detailed transport options, local commute tips, and day-by-day plans so you never feel lost.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="solo-visual reveal">
+        <div class="solo-visual-icon">🧑‍🦱</div>
+        <div class="solo-visual-title">Solo Trip Checklist</div>
+        <div class="solo-checklist">
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Personalized itinerary</div>
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Emergency numbers verified</div>
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Real accommodation options</div>
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Weather-smart packing list</div>
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Photo spot guide</div>
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Budget breakdown</div>
+          <div class="solo-check-item"><span class="solo-check-icon">✓</span> Local phrases</div>
+        </div>
+        <a href="/planner.html" class="btn btn-primary w-full" style="margin-top:1.5rem;justify-content:center;">
+          Start Planning Solo ✈️
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMMUNITY REVIEWS
+════════════════════════════════════════════════════════════ -->
+<section class="section" id="reviews" style="background:var(--dark-2);">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Community</div>
+      <h2 class="section-title">Real Traveler Stories</h2>
+      <p class="section-subtitle">Honest reviews from people who've actually been there.</p>
+    </div>
+    <div class="reviews-track-wrapper">
+      <div class="reviews-track" id="reviews-track">
+        <!-- Loaded dynamically, then duplicated for infinite scroll -->
+        <div class="review-card skeleton" style="height:160px;"></div>
+        <div class="review-card skeleton" style="height:160px;"></div>
+        <div class="review-card skeleton" style="height:160px;"></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="/community.html" class="btn btn-secondary">Read All Reviews →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     CTA
+════════════════════════════════════════════════════════════ -->
+<section class="cta-section section">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <div class="section-label" style="margin-bottom:1rem;">Ready to explore?</div>
+      <h2 class="cta-title">Your Next Adventure Awaits</h2>
+      <p class="cta-subtitle">Join thousands of travelers who plan smarter with WanderAI.</p>
+      <div class="cta-actions">
+        <a href="/planner.html" class="btn btn-primary btn-lg">✈️ Plan Your Trip</a>
+        <a href="/explore.html" class="btn btn-secondary btn-lg">🌍 Explore Destinations</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo" style="margin-bottom:1rem;">
+          <span class="logo-icon">🌍</span>
+          <span>WanderAI</span>
+        </div>
+        <p class="footer-brand-desc">AI-powered travel planning with real data. Plan any trip — from Goa beaches to the last village of Chitkul.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Plan</div>
+        <div class="footer-links">
+          <a href="/planner.html">Trip Planner</a>
+          <a href="/explore.html">Explore Destinations</a>
+          <a href="/community.html">Community Reviews</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Discover</div>
+        <div class="footer-links">
+          <a href="/explore.html?type=mountain">Mountains</a>
+          <a href="/explore.html?type=beach">Beaches</a>
+          <a href="/explore.html?type=village">Villages</a>
+          <a href="/explore.html?type=heritage">Heritage</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Info</div>
+        <div class="footer-links">
+          <a href="#how-it-works">How It Works</a>
+          <a href="#solo-travel">Solo Travel Guide</a>
+          <a href="/community.html">Write a Review</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 WanderAI. Made with ❤️ for travelers.</span>
+      <span>Real data • Real places • AI personalized</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Scripts ─────────────────────────────────────────────── -->
+<script src="/js/api.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="/js/firebase-init.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  // Hero search bar
+  (function() {
+    const input = document.getElementById('hero-search-input');
+    const dropdown = document.getElementById('hero-search-dropdown');
+    const btn = document.getElementById('hero-search-btn');
+    let timer = null;
+
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      const q = input.value.trim();
+      if (q.length < 2) { dropdown.classList.remove('open'); return; }
+      timer = setTimeout(async () => {
+        try {
+          const data = await api.search(q);
+          renderDropdown(data.results || []);
+        } catch {}
+      }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('open');
+    });
+
+    function renderDropdown(results) {
+      if (!results.length) { dropdown.classList.remove('open'); return; }
+      const icons = { mountain:'🏔️', beach:'🏖️', city:'🏙️', heritage:'🕌', village:'🏡', valley:'🌿', spiritual:'🕍', island:'🌊' };
+      dropdown.innerHTML = results.map(r => `
+        <div class="dropdown-item" data-name="${r.name}">
+          <span class="dropdown-item-icon">${icons[r.type] || '📍'}</span>
+          <div>
+            <div class="dropdown-item-name">${r.name}</div>
+            <div class="dropdown-item-sub">${[r.state, r.country].filter(Boolean).join(', ')}</div>
+          </div>
+        </div>
+      `).join('');
+      dropdown.classList.add('open');
+      dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+          input.value = item.dataset.name;
+          dropdown.classList.remove('open');
+        });
+      });
+    }
+
+    function goToPlan() {
+      const dest = input.value.trim();
+      if (!dest) { showToast('Please enter a destination', 'error'); input.focus(); return; }
+      window.location.href = `/planner.html?dest=${encodeURIComponent(dest)}`;
+    }
+
+    btn.addEventListener('click', goToPlan);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') goToPlan(); });
+  })();
+
+  // Load featured destinations
+  (async function loadFeatured() {
+    try {
+      const data = await api.getFeatured();
+      const grid = document.getElementById('featured-destinations');
+      if (!grid) return;
+
+      const dests = data.destinations || [];
+      if (!dests.length) { grid.innerHTML = '<p class="text-muted text-center">No destinations found.</p>'; return; }
+
+      grid.innerHTML = dests.slice(0, 6).map(d => {
+        const emoji = getDestEmoji(d.type);
+        const months = d.best_months?.slice(0, 3).join(', ') || 'Year-round';
+        const tags = (d.tags || []).slice(0, 3);
+        return `
+          <div class="dest-card reveal" onclick="window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">
+            <div class="dest-card-image" style="background-image: url('${d.image_url}'); background-size: cover; background-position: center;">
+              <div class="dest-card-overlay"></div>
+              <div class="dest-card-type"><span class="badge badge-primary">${d.type}</span></div>
+            </div>
+            <div class="dest-card-body">
+              <div class="dest-card-name">${d.name}</div>
+              <div class="dest-card-location">📍 ${[d.state, d.country].filter(Boolean).join(', ')}</div>
+              <div class="dest-card-tags">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+              <div class="dest-card-footer">
+                <div class="dest-card-season">🗓️ Best: ${months}</div>
+                <button class="dest-card-btn" onclick="event.stopPropagation();window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">Plan →</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Re-init reveal for dynamic content
+      document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        observer.observe(el);
+      });
+    } catch (e) { console.error('Featured load error:', e); }
+  })();
+
+  // Load community reviews carousel
+  (async function loadReviewsCarousel() {
+    try {
+      const data = await api.getRecentReviews();
+      const reviews = data.reviews || [];
+      const track = document.getElementById('reviews-track');
+      if (!track || !reviews.length) return;
+
+      const makeCard = (r) => `
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">${r.author_name?.[0]?.toUpperCase() || '?'}</div>
+            <div>
+              <div class="review-author-name">${r.author_name}</div>
+              <div class="review-dest">📍 ${r.destination_name || 'India'}</div>
+            </div>
+            <div style="margin-left:auto;">${starsHtml(r.rating)}</div>
+          </div>
+          <div class="review-body">"${(r.body || '').slice(0, 150)}${r.body?.length > 150 ? '...' : ''}"</div>
+        </div>
+      `;
+
+      const cards = reviews.map(r => makeCard(r)).join('');
+      // Duplicate for infinite scroll
+      track.innerHTML = cards + cards;
+    } catch {}
+  })();
+</script>
+</body>
+</html>

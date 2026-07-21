@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication - AI Trip Planner</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    /* ── Dark Navy/Purple Theme for Auth ───────────────────────────── */
+    :root {
+      --auth-bg-dark: #0a0a1a;
+      --auth-card-bg: rgba(20, 20, 35, 0.65);
+      --auth-border: rgba(108, 99, 255, 0.2);
+      --auth-primary: #8b5cf6;
+      --auth-primary-hover: #7c3aed;
+      --auth-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --auth-text: #f8fafc;
+      --auth-text-muted: #94a3b8;
+    }
+
+    body {
+      background-color: var(--auth-bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
+      color: var(--auth-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, sans-serif;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      margin-top: 2rem;
+    }
+
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-brand h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+      background: var(--auth-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .auth-brand p {
+      font-size: 0.95rem;
+      color: var(--auth-text-muted);
+      margin: 0;
+    }
+
+    .auth-card {
+      background: var(--auth-card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--auth-border);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--auth-gradient);
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 2rem;
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.65rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--auth-text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .auth-tab.active {
+      background: var(--auth-gradient);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+    }
+
+    .auth-form-group {
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .auth-form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-input {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: #fff;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .auth-input:focus {
+      outline: none;
+      border-color: var(--auth-primary);
+      background: rgba(0,0,0,0.4);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 36px;
+      background: none;
+      border: none;
+      color: var(--auth-text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .password-toggle:hover { color: #fff; }
+
+    .auth-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .auth-options a {
+      color: var(--auth-primary);
+      text-decoration: none;
+    }
+    .auth-options a:hover { text-decoration: underline; }
+
+    .auth-btn-primary {
+      width: 100%;
+      background: var(--auth-gradient);
+      color: #fff;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+    .auth-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+    }
+    .auth-btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: var(--auth-text-muted);
+      font-size: 0.85rem;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .auth-divider:not(:empty)::before { margin-right: .5em; }
+    .auth-divider:not(:empty)::after { margin-left: .5em; }
+
+    .btn-google {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 0.85rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+    }
+    .btn-google:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div class="auth-container">
+  <div class="auth-brand">
+    <h1>🌍 WanderAI</h1>
+    <p>Plan smarter. Travel farther.</p>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-signin">Sign In</div>
+      <div class="auth-tab" id="tab-signup">Create Account</div>
+    </div>
+
+    <!-- Sign In Form -->
+    <form id="form-signin">
+      <div class="auth-form-group">
+        <label>Email</label>
+        <input type="email" id="si-email" class="auth-input" placeholder="you@example.com" required>
+      </div>
+      
+      <div class="auth-form-group">
+        <label>Password</label>
+        <input type="password" id="si-password" class="auth-input" placeholder="••••••••" required>
+        <button type="button" class="password-toggle" onclick="togglePwd('si-password')">Show</button>
+      </div>
+      
+      <div class="auth-options">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+          <input type="checkbox" id="si-remember" checked> Remember me
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+      
+      <div id="si-error" class="error-msg"></div>
+      
+      <button type="submit" class="auth-btn-primary" id="si-submit">Sign In to AI Trip Planner</button>
+    </form>
+
+    <!-- Sign Up Form (Hidden by default) -->
+    <form id="form-signup" style="display: none;">
+      <div class="auth-form-group">
+        <label>Full Name</label>
+        <input type="text" id="su-name" class="auth-input" placeholder="Alex Walker" required>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Email</label>
+        <input type="email" id="su-email" class="auth-input" placeholder="you@example.com" required>
+      </div>
+      
+      <div class="auth-form-group">
+        <label>Password</label>
+        <input type="password" id="su-password" class="auth-input" placeholder="Min 6 characters" required minlength="6">
+        <button type="button" class="password-toggle" onclick="togglePwd('su-password')">Show</button>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="su-confirm" class="auth-input" placeholder="••••••••" required>
+      </div>
+      
+      <div class="auth-options" style="margin-top:-0.5rem;margin-bottom:1rem;">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+          <input type="checkbox" required> I agree to the Terms & Conditions
+        </label>
+      </div>
+      
+      <div id="su-error" class="error-msg"></div>
+      
+      <button type="submit" class="auth-btn-primary" id="su-submit">Create Account</button>
+    </form>
+
+    <div class="auth-divider">or</div>
+    
+    <button type="button" class="btn-google" id="btn-google">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> 
+      Continue with Google
+    </button>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="/js/firebase-init.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script>
+  // UI Toggles
+  const tabSignin = document.getElementById('tab-signin');
+  const tabSignup = document.getElementById('tab-signup');
+  const formSignin = document.getElementById('form-signin');
+  const formSignup = document.getElementById('form-signup');
+
+  tabSignin.addEventListener('click', () => {
+    tabSignin.classList.add('active');
+    tabSignup.classList.remove('active');
+    formSignin.style.display = 'block';
+    formSignup.style.display = 'none';
+  });
+
+  tabSignup.addEventListener('click', () => {
+    tabSignup.classList.add('active');
+    tabSignin.classList.remove('active');
+    formSignup.style.display = 'block';
+    formSignin.style.display = 'none';
+  });
+
+  function togglePwd(id) {
+    const input = document.getElementById(id);
+    const btn = input.nextElementSibling;
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'Hide';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'Show';
+    }
+  }
+
+  // Firebase Auth Logic Integration
+  formSignin.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('si-email').value;
+    const password = document.getElementById('si-password').value;
+    const btn = document.getElementById('si-submit');
+    const errEl = document.getElementById('si-error');
+    
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    errEl.style.display = 'none';
+
+    await handleAuth('login', email, password);
+
+    btn.disabled = false;
+    btn.textContent = 'Sign In to AI Trip Planner';
+  });
+
+  formSignup.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('su-name').value;
+    const email = document.getElementById('su-email').value;
+    const password = document.getElementById('su-password').value;
+    const confirm = document.getElementById('su-confirm').value;
+    const btn = document.getElementById('su-submit');
+    const errEl = document.getElementById('su-error');
+
+    if (password !== confirm) {
+      errEl.textContent = 'Passwords do not match.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+
+    await handleAuth('create', email, password, name);
+
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+  });
+
+  document.getElementById('btn-google').addEventListener('click', async () => {
+    await handleAuth('google');
+  });
+  async function handleAuth(action, email, password, name) {
+    // Wait for firebase to be ready
+    if (!firebaseAuth) {
+      await new Promise(resolve => window.addEventListener('firebaseReady', resolve));
+    }
+
+    try {
+      if (action === 'create') {
+        const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+        if (name) {
+          await userCredential.user.updateProfile({ displayName: name });
+        }
+      } else if (action === 'login') {
+        await firebaseAuth.signInWithEmailAndPassword(email, password);
+      } else if (action === 'google') {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await firebaseAuth.signInWithPopup(provider);
+      }
+      
+      // auth-guard.js will handle the redirect once onAuthStateChanged fires
+    } catch (err) {
+      console.error(err);
+      let msg = 'Authentication failed.';
+      if (err.code === 'auth/email-already-in-use') msg = 'Email is already registered.';
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
+      showToast(msg, 'error');
+    }
+  }
+</script>
+</body>
+</html>

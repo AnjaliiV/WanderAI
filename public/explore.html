@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Destinations — WanderAI</title>
+  <meta name="description" content="Explore hundreds of destinations — from Goa beaches to the remote village of Chitkul. Filter by type, region and budget.">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/explore.css">
+</head>
+<body>
+<div id="toast-container"></div>
+
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-logo"><span class="logo-icon">🌍</span><span>WanderAI</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/planner.html">Plan a Trip</a>
+      <a href="/explore.html" class="active">Explore</a>
+      <a href="/community.html">Community</a>
+      <a href="/login.html">Sign In</a>
+    </div>
+    <a href="/planner.html" class="btn btn-primary btn-sm">✈️ Plan Now</a>
+  </div>
+</nav>
+
+<div class="explore-page">
+  <div class="explore-header">
+    <div class="explore-header-inner container">
+      <div class="section-label" style="margin-bottom:1rem;">Discover</div>
+      <h1>Explore Destinations</h1>
+      <p>From iconic cities to hidden mountain villages — find your perfect destination.</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="explore-filters">
+    <div class="filters-inner">
+      <span class="filter-label">Filter:</span>
+      <div class="filter-chips">
+        <div class="filter-chip active" data-filter="all">🌍 All</div>
+        <div class="filter-chip" data-filter="mountain">🏔️ Mountains</div>
+        <div class="filter-chip" data-filter="beach">🏖️ Beaches</div>
+        <div class="filter-chip" data-filter="village">🏡 Villages</div>
+        <div class="filter-chip" data-filter="heritage">🕌 Heritage</div>
+        <div class="filter-chip" data-filter="hill-station">⛰️ Hill Stations</div>
+        <div class="filter-chip" data-filter="spiritual">🕍 Spiritual</div>
+        <div class="filter-chip" data-filter="island">🌊 Islands</div>
+        <div class="filter-chip" data-filter="valley">🌿 Valleys</div>
+      </div>
+      <div class="explore-search" style="margin-left:auto;">
+        <span class="explore-search-icon">🔍</span>
+        <input type="text" class="form-input" id="explore-search-input" placeholder="Search destination...">
+      </div>
+    </div>
+  </div>
+
+  <div class="explore-grid">
+    <div class="container">
+
+      <!-- Offbeat Banner -->
+      <div class="offbeat-banner reveal">
+        <div class="offbeat-icon">🗺️</div>
+        <div>
+          <div class="offbeat-title">Can't find your destination?</div>
+          <div class="offbeat-desc">Our AI planner works for <strong>any</strong> destination — including obscure villages, remote valleys and lesser-known gems not in our curated list. Just type the name in the planner.</div>
+        </div>
+        <a href="/planner.html" class="btn btn-accent" style="white-space:nowrap;flex-shrink:0;">Plan Any Place →</a>
+      </div>
+
+      <!-- Destinations Grid -->
+      <div class="destinations-masonry" id="destinations-grid">
+        <!-- Skeletons -->
+        <div class="skeleton" style="height:360px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:360px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:360px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:360px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:360px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:360px;border-radius:20px;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer style="background:var(--dark-2);border-top:1px solid var(--dark-border);padding:2rem 0;text-align:center;color:var(--text-dim);font-size:0.85rem;">
+  <div class="container">
+    <a href="/" class="nav-logo" style="justify-content:center;margin-bottom:1rem;"><span>🌍</span><span>WanderAI</span></a>
+    <p>© 2026 WanderAI · Real data · No invented info · AI personalized</p>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="/js/firebase-init.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  let allDestinations = [];
+  let activeFilter = 'all';
+  let searchQuery = '';
+
+  async function loadDestinations() {
+    try {
+      const data = await api.getAllDestinations();
+      allDestinations = data.destinations || [];
+      renderGrid();
+    } catch (e) {
+      document.getElementById('destinations-grid').innerHTML =
+        '<div class="no-results"><div class="no-results-icon">😕</div><p>Could not load destinations. Please refresh.</p></div>';
+    }
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('destinations-grid');
+    let dests = allDestinations;
+
+    if (activeFilter !== 'all') {
+      dests = dests.filter(d => d.type === activeFilter || (d.tags || []).includes(activeFilter));
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      dests = dests.filter(d =>
+        d.name.toLowerCase().includes(q) ||
+        (d.state || '').toLowerCase().includes(q) ||
+        (d.tags || []).some(t => t.includes(q))
+      );
+    }
+
+    if (!dests.length) {
+      grid.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">🗺️</div>
+          <p>No destinations found. Try the AI planner for any location!</p>
+          <a href="/planner.html" class="btn btn-primary" style="margin-top:1rem;">Plan Any Destination →</a>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = dests.map(d => {
+      const emoji = getDestEmoji(d.type);
+      const months = (d.best_months || []).slice(0, 3).join(', ') || 'Year-round';
+      const tags = (d.tags || []).slice(0, 4);
+      const isOffbeat = (d.tags || []).some(t => ['offbeat','village','hidden'].includes(t));
+
+      return `
+        <div class="explore-dest-card reveal" onclick="window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">
+          <div class="explore-card-image" style="background-image: url('${d.image_url}'); background-size: cover; background-position: center;">
+            <div class="explore-card-overlay"></div>
+            <div class="explore-card-badges">
+              <span class="badge badge-primary">${d.type || 'destination'}</span>
+              ${isOffbeat ? '<span class="badge badge-accent">💎 Offbeat</span>' : ''}
+            </div>
+          </div>
+          <div class="explore-card-body">
+            <div class="explore-card-name">${d.name}</div>
+            <div class="explore-card-location">📍 ${[d.state, d.country].filter(Boolean).join(', ')}</div>
+            <div class="explore-card-tags">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+            <div class="explore-card-footer">
+              <div class="explore-card-season">🗓️ Best: ${months}</div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">Plan This →</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Re-init scroll reveal
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      obs.observe(el);
+    });
+  }
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter;
+      renderGrid();
+    });
+  });
+
+  // Search
+  let searchTimer;
+  document.getElementById('explore-search-input').addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      renderGrid();
+    }, 250);
+  });
+
+  // Pre-apply URL filter
+  const urlType = new URLSearchParams(window.location.search).get('type');
+  if (urlType) {
+    const chip = document.querySelector(`[data-filter="${urlType}"]`);
+    if (chip) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = urlType;
+    }
+  }
+
+  loadDestinations();
+</script>
+</body>
+</html>

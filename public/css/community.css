@@ -1,0 +1,193 @@
+/* ============================================================
+   Community Page Styles
+   ============================================================ */
+
+.community-page { padding-top: var(--nav-height); min-height: 100vh; }
+
+.community-header {
+  padding: var(--space-2xl) 0 var(--space-xl);
+  text-align: center;
+  background: var(--dark-2);
+  border-bottom: 1px solid var(--dark-border);
+}
+.community-header h1 { margin-bottom: var(--space-sm); }
+.community-header p { color: var(--text-muted); }
+
+/* Stats Bar */
+.community-stats {
+  background: var(--dark-2);
+  border-bottom: 1px solid var(--dark-border);
+  padding: var(--space-md) 0;
+}
+.stats-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3xl);
+}
+.comm-stat { text-align: center; }
+.comm-stat-num { font-size: 1.5rem; font-weight: 800; background: var(--grad-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.comm-stat-label { font-size: 0.78rem; color: var(--text-muted); }
+
+/* Layout */
+.community-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-2xl);
+  padding: var(--space-2xl) 0 var(--space-3xl);
+  align-items: start;
+}
+
+/* Review Cards */
+.reviews-feed { display: flex; flex-direction: column; gap: var(--space-lg); }
+
+.community-review-card {
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.community-review-card:hover { border-color: rgba(108,99,255,0.2); }
+
+.review-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--dark-border);
+}
+.review-user { display: flex; align-items: center; gap: var(--space-md); }
+.review-avatar-lg {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--grad-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.review-user-name { font-weight: 700; }
+.review-user-dest { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.review-rating-date { text-align: right; }
+.review-rating { margin-bottom: 4px; }
+.review-date { font-size: 0.75rem; color: var(--text-dim); }
+
+.review-card-body { padding: var(--space-xl); }
+.review-card-title { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-sm); }
+.review-card-body-text { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin-bottom: var(--space-lg); }
+.review-card-tags { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-bottom: var(--space-lg); }
+
+/* Accommodation inside review */
+.review-accommodation {
+  padding: var(--space-md) var(--space-lg);
+  background: var(--dark);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.accom-icon { font-size: 1.2rem; }
+.accom-name { font-weight: 600; font-size: 0.88rem; }
+.accom-type { font-size: 0.75rem; color: var(--text-muted); }
+.accom-rating-val { font-weight: 700; color: var(--accent); }
+
+.review-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  border-top: 1px solid var(--dark-border);
+}
+.helpful-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--dark);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.helpful-btn:hover { border-color: rgba(6,214,160,0.4); color: var(--success); }
+.helpful-count { font-weight: 600; }
+
+/* Sidebar */
+.community-sidebar { display: flex; flex-direction: column; gap: var(--space-lg); position: sticky; top: calc(var(--nav-height) + var(--space-lg)); }
+
+.sidebar-card {
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.sidebar-card-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--dark-border);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.sidebar-card-body { padding: var(--space-lg); }
+
+/* Write Review Form */
+.write-review-form { display: flex; flex-direction: column; gap: var(--space-md); }
+.star-rating-input { display: flex; gap: var(--space-sm); }
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--dark-border);
+  transition: var(--transition-fast);
+  padding: 0;
+}
+.star-btn.active, .star-btn:hover { color: var(--accent); }
+.tag-input-area { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.tag-toggle {
+  padding: 0.25rem 0.6rem;
+  background: var(--dark);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  color: var(--text-muted);
+}
+.tag-toggle.selected { background: rgba(108,99,255,0.15); border-color: rgba(108,99,255,0.4); color: var(--primary-light); }
+
+/* Top Destinations */
+.top-dest-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.top-dest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.top-dest-item:hover { background: var(--glass); }
+.top-dest-name { font-size: 0.88rem; font-weight: 600; }
+.top-dest-reviews { font-size: 0.75rem; color: var(--text-muted); }
+.top-dest-rating { font-size: 0.82rem; color: var(--accent); font-weight: 700; }
+
+@media (max-width: 1024px) {
+  .community-layout { grid-template-columns: 1fr; }
+  .community-sidebar { position: static; }
+}
+@media (max-width: 768px) {
+  .stats-inner { gap: var(--space-xl); }
+  .review-card-header { flex-direction: column; align-items: flex-start; }
+  .review-rating-date { text-align: left; }
+}
