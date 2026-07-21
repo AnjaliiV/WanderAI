@@ -225,17 +225,11 @@ async function seed() {
   await initDb();
   const db = getDb();
 
-  console.log('🌱 Seeding destinations...');
-  const insertDest = db.prepare(`
-    INSERT OR REPLACE INTO destinations
-    (name, slug, image_url, country, state, region, lat, lng, type, tags, best_months, language, currency,
-     timezone, emergency_police, emergency_ambulance, emergency_tourist, overview, highlights,
-     hidden_gems, local_phrases, featured)
-    VALUES
-    (@name, @slug, @image_url, @country, @state, @region, @lat, @lng, @type, @tags, @best_months, @language,
-     @currency, @timezone, @emergency_police, @emergency_ambulance, @emergency_tourist, @overview,
-     @highlights, @hidden_gems, @local_phrases, @featured)
-  `);
+  console.log('🌱 Seeding destinations into Firestore...');
+  
+  // Use batches for efficient writes
+  let batch = db.batch();
+  let destDocIds = {}; // Map slug -> doc id for reviews
 
   const imageMap = {
     'goa': 'https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/fc/BeachFun.jpg/960px-BeachFun.jpg',
@@ -254,43 +248,45 @@ async function seed() {
     'coorg': 'https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/17/Tadiandamol_Valley%2C_Western_Ghats.jpg/960px-Tadiandamol_Valley%2C_Western_Ghats.jpg'
   };
 
-  const seedMany = db.transaction((rows) => {
-    for (const row of rows) {
-      row.image_url = imageMap[row.slug] || 'https://images.unsplash.com/photo-1506461883276-594c8cb25638?auto=format&fit=crop&w=800&q=80';
-      row.tags = typeof row.tags === 'string' ? row.tags : JSON.stringify(row.tags);
-      row.best_months = typeof row.best_months === 'string' ? row.best_months : JSON.stringify(row.best_months);
-      row.highlights = typeof row.highlights === 'string' ? row.highlights : JSON.stringify(row.highlights);
-      row.hidden_gems = typeof row.hidden_gems === 'string' ? row.hidden_gems : JSON.stringify(row.hidden_gems);
-      row.local_phrases = typeof row.local_phrases === 'string' ? row.local_phrases : JSON.stringify(row.local_phrases);
-      insertDest.run(row);
-    }
-  });
+  const { FieldValue } = require('firebase-admin/firestore');
 
-  seedMany(destinations);
+  for (const row of destinations) {
+    row.image_url = imageMap[row.slug] || 'https://images.unsplash.com/photo-1506461883276-594c8cb25638?auto=format&fit=crop&w=800&q=80';
+    
+    // Create a new doc reference so we have the ID instantly
+    const docRef = db.collection('destinations').doc(row.slug); 
+    destDocIds[row.slug] = row.slug; 
+    
+    batch.set(docRef, row);
+  }
+
+  await batch.commit();
   console.log(`✅ ${destinations.length} destinations seeded`);
 
   console.log('🌱 Seeding reviews...');
-  const insertReview = db.prepare(`
-    INSERT OR IGNORE INTO reviews
-    (destination_id, author_name, rating, title, body, tags,
-     accommodation_name, accommodation_type, accommodation_rating, accommodation_link)
-    VALUES
-    (
-      (SELECT id FROM destinations WHERE slug = @destination_slug),
-      @author_name, @rating, @title, @body, @tags,
-      @accommodation_name, @accommodation_type, @accommodation_rating, @accommodation_link
-    )
-  `);
+  let reviewBatch = db.batch();
 
-  const seedReviewsTx = db.transaction((rows) => {
-    for (const row of rows) insertReview.run(row);
-  });
+  for (const review of seedReviews) {
+    const destSlug = review.destination_slug;
+    const destinationId = destDocIds[destSlug];
+    
+    if (!destinationId) continue;
+    
+    const docRef = db.collection('reviews').doc();
+    reviewBatch.set(docRef, {
+      ...review,
+      destination_id: destinationId,
+      destination_name: destinations.find(d => d.slug === destSlug)?.name || null,
+      created_at: FieldValue.serverTimestamp(),
+      helpful: 0
+    });
+  }
 
-  seedReviewsTx(seedReviews);
+  await reviewBatch.commit();
   console.log(`✅ ${seedReviews.length} reviews seeded`);
 
-  console.log('\n🎉 Database seeded successfully!\n');
-  db.close();
+  console.log('\n🎉 Firestore Database seeded successfully!\n');
+  process.exit(0);
 }
 
 seed();

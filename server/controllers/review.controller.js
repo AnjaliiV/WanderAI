@@ -4,16 +4,16 @@ const Destination = require('../models/destination.model');
 
 async function getRecentReviews(req, res, next) {
   try {
-    const reviews = Review.findRecent(12);
+    const reviews = await Review.findRecent(12);
     res.json({ reviews });
   } catch (err) { next(err); }
 }
 
 async function getReviewsByDestination(req, res, next) {
   try {
-    const dest = Destination.findBySlug(req.params.slug);
+    const dest = await Destination.findBySlug(req.params.slug);
     if (!dest) return res.status(404).json({ error: 'Destination not found' });
-    const reviews = Review.findByDestination(dest.id, 20);
+    const reviews = await Review.findByDestination(dest.id, 20);
     res.json({ reviews });
   } catch (err) { next(err); }
 }
@@ -25,9 +25,13 @@ async function createReview(req, res, next) {
       accommodationName, accommodationType, accommodationRating, accommodationLink,
     } = req.body;
 
-    const result = Review.create({
+    const dest = await Destination.findById(destinationId);
+
+    const result = await Review.create({
       user_id: req.user ? req.user.uid : null,
       destination_id: destinationId,
+      destination_name: dest ? dest.name : null,
+      destination_slug: dest ? dest.slug : null,
       author_name: authorName,
       rating,
       title,
@@ -45,7 +49,7 @@ async function createReview(req, res, next) {
 
 async function markHelpful(req, res, next) {
   try {
-    Review.markHelpful(req.params.id);
+    await Review.markHelpful(req.params.id);
     res.json({ success: true });
   } catch (err) { next(err); }
 }

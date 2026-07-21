@@ -67,7 +67,7 @@ async function planTrip(req, res, next) {
     // ── Step 5: Save trip to DB ───────────────────────────────────────────
     let tripId = null;
     try {
-      const saved = Trip.create({
+      const saved = await Trip.create({
         user_id: req.user ? req.user.uid : null,
         destination_name: destination.name,
         destination_lat: destination.lat,

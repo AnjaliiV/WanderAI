@@ -8,7 +8,7 @@ async function search(req, res, next) {
     if (!q || q.length < 2) return res.json({ results: [] });
 
     // DB search first
-    const dbResults = Destination.search(q, 8);
+    const dbResults = await Destination.search(q, 8);
     if (dbResults.length > 0) {
       return res.json({
         results: dbResults.map(d => ({
@@ -46,7 +46,8 @@ async function search(req, res, next) {
 
 async function getFeatured(req, res, next) {
   try {
-    const destinations = Destination.findFeatured(9).map(d => Destination.parseJson(d));
+    const featured = await Destination.findFeatured(9);
+    const destinations = featured.map(d => Destination.parseJson(d));
     res.json({ destinations });
   } catch (err) { next(err); }
 }
@@ -54,14 +55,15 @@ async function getFeatured(req, res, next) {
 async function getAll(req, res, next) {
   try {
     const { type, state } = req.query;
-    const destinations = Destination.findAll({ type, state }, 30).map(d => Destination.parseJson(d));
+    const allDests = await Destination.findAll({ type, state }, 30);
+    const destinations = allDests.map(d => Destination.parseJson(d));
     res.json({ destinations });
   } catch (err) { next(err); }
 }
 
 async function getOne(req, res, next) {
   try {
-    const dest = Destination.findBySlug(req.params.slug);
+    const dest = await Destination.findBySlug(req.params.slug);
     if (!dest) return res.status(404).json({ error: 'Destination not found' });
     res.json({ destination: Destination.parseJson(dest) });
   } catch (err) { next(err); }
