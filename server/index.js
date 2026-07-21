@@ -10,7 +10,13 @@ const PORT = process.env.PORT || 3000;
 async function start() {
   try {
     // Initialise Firebase Admin
-    const serviceAccount = require(path.join(__dirname, '..', 'firebase-service-account.json'));
+    let serviceAccount;
+    if (process.env.FIREBASE_CREDENTIALS) {
+      serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+    } else {
+      serviceAccount = require(path.join(__dirname, '..', 'firebase-service-account.json'));
+    }
+    
     initializeApp({
       credential: cert(serviceAccount)
     });
