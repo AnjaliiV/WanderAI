@@ -10,23 +10,42 @@ const Review = {
       .where('destination_id', '==', destinationId)
       .orderBy('helpful', 'desc')
       .orderBy('created_at', 'desc')
-      .limit(limitCount)
+      .limit(limitCount * 2)
       .get();
       
     let results = [];
-    snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
-    return results;
+    let seen = new Set();
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const key = `${data.author_name}_${data.destination_id}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        results.push({ id: doc.id, ...data });
+      }
+    });
+    return results.slice(0, limitCount);
   },
 
   async findRecent(limitCount = 10) {
     const snapshot = await db().collection('reviews')
       .orderBy('created_at', 'desc')
-      .limit(limitCount)
+      .limit(limitCount * 2) // fetch extra to account for duplicates
       .get();
       
     let results = [];
-    snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
-    return results;
+    let seen = new Set();
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const key = `${data.author_name}_${data.destination_id}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        results.push({ id: doc.id, ...data });
+      }
+    });
+    
+    return results.slice(0, limitCount);
   },
 
   async create({ user_id, destination_id, author_name, rating, title, body, tags,
