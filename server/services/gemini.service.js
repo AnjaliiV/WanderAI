@@ -46,7 +46,13 @@ async function generateTripPlan({ destination, places, routes, weather, userPref
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error('Empty response from Gemini');
 
-    return JSON.parse(text);
+    let cleanText = text.trim();
+    const match = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+    if (match) {
+      cleanText = match[1].trim();
+    }
+
+    return JSON.parse(cleanText);
   } catch (err) {
     if (err instanceof SyntaxError) throw new Error('Gemini returned invalid JSON. Retry.');
     throw err;
@@ -281,7 +287,13 @@ Return ONLY a raw JSON object with this exact schema (no markdown, no backticks)
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error('Empty response from Gemini');
     
-    return JSON.parse(text);
+    let cleanText = text.trim();
+    const match = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+    if (match) {
+      cleanText = match[1].trim();
+    }
+
+    return JSON.parse(cleanText);
   } catch (err) {
     console.error('Feasibility check failed:', err.message);
     // Fallback if AI fails: just assume it's affordable so we don't break the flow completely
