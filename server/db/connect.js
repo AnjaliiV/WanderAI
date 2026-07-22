@@ -11,17 +11,29 @@ function initDb() {
   // Ensure Firebase Admin is initialized
   if (getApps().length === 0) {
     let serviceAccount;
-    if (process.env.FIREBASE_CREDENTIALS) {
-      serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-    } else {
-      serviceAccount = require(path.join(__dirname, '..', '..', 'firebase-service-account.json'));
+    try {
+      if (process.env.FIREBASE_CREDENTIALS) {
+        serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+        // Fix for Vercel: literal \n might get escaped as \\n
+        if (serviceAccount.private_key) {
+          serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+        }
+      } else {
+        serviceAccount = require(path.join(__dirname, '..', '..', 'firebase-service-account.json'));
+      }
+      initializeApp({
+        credential: cert(serviceAccount)
+      });
+    } catch (error) {
+      console.error('[DB] 🔥 Firebase Admin Init Error:', error);
     }
-    initializeApp({
-      credential: cert(serviceAccount)
-    });
   }
 
-  db = getFirestore();
+  try {
+    db = getFirestore();
+  } catch (error) {
+    console.error('[DB] 🔥 Firestore Init Error:', error);
+  }
   return db;
 }
 
