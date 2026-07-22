@@ -68,7 +68,7 @@ function renderReviewCard(r) {
         </div>
         <div class="review-rating-date">
           <div class="review-rating">${starsHtml(r.rating)}</div>
-          <div class="review-date">${new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+          <div class="review-date">${new Date((r.created_at?._seconds ? r.created_at._seconds * 1000 : r.created_at) || Date.now()).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
         </div>
       </div>
       <div class="review-card-body">
