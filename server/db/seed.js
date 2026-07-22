@@ -14,7 +14,7 @@ const destinations = [
     overview: 'India\'s smallest state and a premier beach destination. Known for its stunning beaches, Portuguese heritage, vibrant nightlife, and incredible seafood. A perfect blend of Indian and Western cultures.',
     highlights: JSON.stringify(['Baga Beach', 'Anjuna Flea Market', 'Basilica of Bom Jesus', 'Dudhsagar Falls', 'Spice Plantations', 'Old Goa Churches']),
     hidden_gems: JSON.stringify(['Butterfly Beach (only accessible by boat)', 'Cola Beach (hidden lagoon)', 'Goa Velha (ancient temples)', 'Cabo de Rama Fort', 'Divar Island']),
-    local_phrases: JSON.stringify({ 'Hello': 'Oi', 'Thank you': 'Obrigado', 'How much?': 'Koso?', 'Good': 'Borem' }),
+    local_phrases: JSON.stringify({ 'Hello': 'Namaskar', 'Thank you': 'Dev borem korum', 'How much?': 'Kitlem?', 'How are you?': 'Koso asa?' }),
     featured: 1,
   },
   {
