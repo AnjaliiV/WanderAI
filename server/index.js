@@ -6,7 +6,7 @@ const app = require('./app');
 
 // Initialize Firebase & Firestore synchronously
 initDb();
-console.log('[DB] ✅ Firebase & Firestore ready');
+console.log('[DB] ✅ Firebase & Firestore ready (v2)');
 
 const PORT = process.env.PORT || 3000;
 
