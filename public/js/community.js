@@ -47,7 +47,12 @@ async function loadReviews() {
 }
 
 function renderReviewCard(r) {
-  const tags = JSON.parse(r.tags || '[]');
+  let tags = [];
+  try {
+    tags = typeof r.tags === 'string' ? JSON.parse(r.tags || '[]') : (r.tags || []);
+  } catch (e) {
+    tags = [];
+  }
   const initial = r.author_name?.[0]?.toUpperCase() || '?';
   const destName = r.destination_name || 'Unknown Destination';
 
