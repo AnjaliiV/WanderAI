@@ -10,12 +10,12 @@ const HEADERS = { 'User-Agent': 'AiTripPlanner/1.0 (travel-planning-app)' };
 async function discoverDestination(query) {
   // 1. DB lookup
   const slug = slugify(query);
-  let dest = Destination.findBySlug(slug);
+  let dest = await Destination.findBySlug(slug);
 
   if (!dest) {
     // Try partial name match
-    const results = Destination.search(query, 1);
-    if (results.length > 0) dest = Destination.findById(results[0].id);
+    const results = await Destination.search(query, 1);
+    if (results.length > 0) dest = await Destination.findById(results[0].id);
   }
 
   if (dest) {
