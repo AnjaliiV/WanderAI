@@ -31,16 +31,15 @@ const Destination = {
     return results.slice(0, limit);
   },
 
-  async findFeatured(limit = 8) {
+  async findFeatured(limitCount = 8) {
     const snapshot = await db().collection('destinations')
       .where('featured', '==', 1)
-      .orderBy('name', 'asc')
-      .limit(limit)
       .get();
       
     let results = [];
     snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
-    return results;
+    results.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    return results.slice(0, limitCount);
   },
 
   async findAll(filters = {}, limitCount = 20) {
