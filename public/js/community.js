@@ -15,11 +15,8 @@ async function loadReviews() {
   if (!feed) return;
 
   try {
-    const featData = await api.getFeatured();
-    const featSlugs = (featData.destinations || []).map(d => d.slug);
-
     const data = await api.getRecentReviews();
-    const reviews = (data.reviews || []).filter(r => featSlugs.includes(r.destination_slug));
+    const reviews = data.reviews || [];
 
     if (!reviews.length) {
       feed.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text-muted);">No review yet</div>`;
