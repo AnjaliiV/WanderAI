@@ -1,7 +1,8 @@
 // Global Authentication Guard
 
 function initAuthGuard() {
-  const isLoginPage = window.location.pathname.includes('/login.html');
+  const path = window.location.pathname;
+  const isLoginPage = path === '/' || path.endsWith('/index.html');
 
   if (typeof firebaseAuth !== 'undefined' && firebaseAuth) {
     firebaseAuth.onAuthStateChanged(async (user) => {
@@ -10,13 +11,13 @@ function initAuthGuard() {
         // Not logged in
         if (!isLoginPage) {
           // Redirect to login if trying to access a protected page
-          window.location.replace('/login.html');
+          window.location.replace('/');
         }
       } else {
         // Logged in
         if (isLoginPage) {
-          // Already logged in, no need to see login page
-          window.location.replace('/');
+          // Already logged in, no need to see login page, redirect to home
+          window.location.replace('/home.html');
         } else {
           // We are on a protected page. Update UI.
           updateNavbarForAuthenticatedUser(user);
@@ -42,14 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateNavbarForAuthenticatedUser(user) {
   // Find the Sign In button in navbar and change it to Sign Out
-  const signInBtn = document.querySelector('.btn-signin-pill') || document.querySelector('a[href="/login.html"]');
+  const signInBtn = document.querySelector('.btn-signin-pill') || 
+                    document.querySelector('a[href="/index.html"]') || 
+                    document.querySelector('a[href="/"]');
   if (signInBtn) {
     signInBtn.textContent = 'Sign Out';
     signInBtn.href = '#';
     signInBtn.onclick = (e) => {
       e.preventDefault();
       localStorage.removeItem('fb_mock_session');
-      firebaseAuth.signOut();
+      firebaseAuth.signOut().then(() => {
+        window.location.replace('/');
+      });
     };
   }
 }

@@ -34,7 +34,8 @@ function initNavbar() {
   const path = window.location.pathname;
   document.querySelectorAll('.nav-links a').forEach(link => {
     const href = link.getAttribute('href');
-    if (href === path || (path === '/' && href === '/index.html') ||
+    if (href === path || 
+        (path === '/' && href === '/index.html') ||
         (href !== '/' && href !== '/index.html' && path.includes(href.replace('.html', '')))) {
       link.classList.add('active');
     }
