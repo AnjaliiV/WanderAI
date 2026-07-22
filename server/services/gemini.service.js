@@ -214,7 +214,11 @@ Return a single valid JSON object with this exact structure:
   }
 }
 
-Generate ${days} days of itinerary. Make it detailed, engaging, and genuinely helpful for a ${userPrefs.travelersType} on a ${tripTypeStr} trip. Provide step-by-step routeSteps in transportSummary from ${userPrefs.origin || 'their location'} to ${name}. For the scenic spots, prioritize iconic landmarks, viewpoints, natural landscapes, hidden gems, and locations that offer the best photography opportunities. Always generate at least 3 authentic hidden gems for the destination, even if not explicitly provided in the source data.`;
+Generate ${days} days of itinerary. Make it detailed, engaging, and genuinely helpful for a ${userPrefs.travelersType} on a ${tripTypeStr} trip. Provide step-by-step routeSteps in transportSummary from ${userPrefs.origin || 'their location'} to ${name}. For the scenic spots, prioritize iconic landmarks, viewpoints, natural landscapes, hidden gems, and locations that offer the best photography opportunities. Always generate at least 3 authentic hidden gems for the destination, even if not explicitly provided in the source data.
+
+IMPORTANT FOR LOCAL PHRASES: 
+If ## LOCAL PHRASES is provided and not empty, you MUST use exactly those phrases. 
+If ## LOCAL PHRASES is empty, you MUST identify the specific regional language spoken at the destination (e.g., Malayalam for Kerala, Kannada for Karnataka, Tamil for Tamil Nadu, Marathi for Maharashtra) and generate phrases in THAT specific local language. DO NOT default to Hindi unless Hindi is the primary local language of that specific state.`;
 }
 
 async function checkTripFeasibility({ destination, routes, userPrefs }) {
