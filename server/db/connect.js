@@ -14,26 +14,33 @@ function initDb() {
     try {
       if (process.env.FIREBASE_CREDENTIALS) {
         serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-        // Fix for Vercel: literal \n might get escaped as \\n
         if (serviceAccount.private_key) {
           serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
         }
       } else {
-        serviceAccount = require(path.join(__dirname, '..', '..', 'firebase-service-account.json'));
+        // Use fs instead of require to prevent Vercel's bundler from attempting to bundle a missing ignored file
+        const fs = require('fs');
+        const jsonPath = path.join(__dirname, '..', '..', 'firebase-service-account.json');
+        if (fs.existsSync(jsonPath)) {
+          serviceAccount = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        } else {
+          console.error('[DB] 🔥 Missing FIREBASE_CREDENTIALS and no local json file found');
+        }
       }
-      initializeApp({
-        credential: cert(serviceAccount)
-      });
+      
+      if (serviceAccount) {
+        initializeApp({ credential: cert(serviceAccount) });
+        db = getFirestore();
+      }
     } catch (error) {
       console.error('[DB] 🔥 Firebase Admin Init Error:', error);
     }
+  } else {
+    try {
+      db = getFirestore();
+    } catch(e) {}
   }
-
-  try {
-    db = getFirestore();
-  } catch (error) {
-    console.error('[DB] 🔥 Firestore Init Error:', error);
-  }
+  
   return db;
 }
 
