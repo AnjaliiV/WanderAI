@@ -14,8 +14,36 @@ async function loadReviews() {
   const feed = document.getElementById('reviews-feed');
   if (!feed) return;
 
-  // Hardcoded as requested
-  feed.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text-muted);">No review yet</div>`;
+  try {
+    const data = await api.getRecentReviews();
+    const reviews = data.reviews || [];
+
+    if (!reviews.length) {
+      feed.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text-muted);">No review yet</div>`;
+      return;
+    }
+
+    feed.innerHTML = reviews.map(r => renderReviewCard(r)).join('');
+
+    // Attach helpful button listeners
+    feed.querySelectorAll('.helpful-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          const id = btn.dataset.id;
+          if (btn.classList.contains('voted')) return;
+          
+          await api.markHelpful(id);
+          btn.classList.add('voted');
+          const span = btn.querySelector('.helpful-count');
+          span.textContent = parseInt(span.textContent) + 1;
+        } catch (e) {
+          showToast('Failed to mark helpful', 'error');
+        }
+      });
+    });
+  } catch (err) {
+    feed.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--error);">Failed to load reviews.</div>`;
+  }
 }
 
 function renderReviewCard(r) {
