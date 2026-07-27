@@ -4,7 +4,7 @@
  * Validates and sanitizes Gemini AI responses.
  * Merges verified real data back in, strips any invented facts.
  */
-function validateAndMerge(aiPlan, { destination, places, routes, weather }) {
+function validateAndMerge(aiPlan, { destination, places, routes, weather, userPrefs }) {
   if (!aiPlan || typeof aiPlan !== 'object') {
     throw new Error('Invalid AI plan structure');
   }
@@ -73,15 +73,32 @@ function validateAndMerge(aiPlan, { destination, places, routes, weather }) {
     })),
   };
 
-  // 7. Ensure budget total is consistent
+  // 7. Ensure budget total is consistent with user input
   if (aiPlan.budgetBreakdown) {
     const bd = aiPlan.budgetBreakdown;
-    const sum = (bd.accommodation || 0) + (bd.food || 0) + (bd.transport || 0)
+    const targetTotal = userPrefs?.budgetMax || bd.total;
+    const currentSum = (bd.accommodation || 0) + (bd.food || 0) + (bd.transport || 0)
               + (bd.activities || 0) + (bd.miscellaneous || 0);
-    if (sum > 0 && Math.abs(sum - (bd.total || 0)) > 100) {
-      bd.total = sum;
+
+    if (currentSum > 0 && currentSum !== targetTotal) {
+      const ratio = targetTotal / currentSum;
+      bd.accommodation = Math.round((bd.accommodation || 0) * ratio);
+      bd.food = Math.round((bd.food || 0) * ratio);
+      bd.transport = Math.round((bd.transport || 0) * ratio);
+      bd.activities = Math.round((bd.activities || 0) * ratio);
+      
+      bd.miscellaneous = targetTotal - (bd.accommodation + bd.food + bd.transport + bd.activities);
+      if (bd.miscellaneous < 0) {
+        bd.miscellaneous = 0;
+      }
+    } else if (currentSum === 0) {
+      bd.miscellaneous = targetTotal;
     }
-    if (bd.total && !bd.perPerson) {
+    
+    bd.total = targetTotal;
+    if (bd.total && userPrefs?.travelersCount) {
+      bd.perPerson = Math.round(bd.total / userPrefs.travelersCount);
+    } else if (bd.total && !bd.perPerson) {
       bd.perPerson = Math.round(bd.total);
     }
   }

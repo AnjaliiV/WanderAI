@@ -15,9 +15,7 @@ async function getNearbyPlaces(lat, lng, radiusKm = 15) {
     (
       node["tourism"~"attraction|viewpoint|museum|artwork|picnic_site|camp_site|information"](around:${radius},${lat},${lng});
       node["amenity"~"restaurant|cafe|food_court"](around:${radius},${lat},${lng});
-      node["tourism"="hotel"](around:${radius},${lat},${lng});
-      node["tourism"="hostel"](around:${radius},${lat},${lng});
-      node["tourism"="guest_house"](around:${radius},${lat},${lng});
+      node["tourism"~"hotel|hostel|guest_house|motel"](around:${radius},${lat},${lng});
       node["natural"~"peak|waterfall|glacier|beach|bay|cave_entrance"](around:${radius},${lat},${lng});
       node["leisure"~"park|nature_reserve"](around:${radius},${lat},${lng});
       node["historic"~"fort|monument|memorial|ruins|temple"](around:${radius},${lat},${lng});
@@ -30,7 +28,11 @@ async function getNearbyPlaces(lat, lng, radiusKm = 15) {
     const res = await fetch(OVERPASS_URL, {
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+        'User-Agent': 'WanderAI/1.0 (Trip Planner App)'
+      },
       signal: AbortSignal.timeout(30000),
     });
 
@@ -51,14 +53,16 @@ function categorisePlaces(elements) {
   const scenicSpots = [];
 
   for (const el of elements) {
-    if (!el.tags || !el.lat || !el.lon) continue;
+    const lat = el.lat || el.center?.lat;
+    const lng = el.lon || el.center?.lon;
+    if (!el.tags || !lat || !lng) continue;
     const name = el.tags.name || el.tags['name:en'] || null;
     if (!name) continue;
 
     const item = {
       name,
-      lat: el.lat,
-      lng: el.lon,
+      lat,
+      lng,
       type: el.tags.tourism || el.tags.amenity || el.tags.natural || el.tags.historic || el.tags.leisure,
       address: [el.tags['addr:street'], el.tags['addr:city']].filter(Boolean).join(', '),
       website: el.tags.website || el.tags['contact:website'] || null,

@@ -79,7 +79,7 @@ function addMarkers(mapData) {
 
   const bounds = [];
 
-  // Center marker
+  // Only Center marker
   const center = mapData.center;
   if (center?.lat && center?.lng) {
     const m = L.marker([center.lat, center.lng], { icon: createMarkerIcon('center', 'Center') })
@@ -87,47 +87,6 @@ function addMarkers(mapData) {
       .addTo(markersLayer);
     bounds.push([center.lat, center.lng]);
   }
-
-  // Attractions
-  (mapData.attractions || []).forEach(place => {
-    if (!place.lat || !place.lng) return;
-    L.marker([place.lat, place.lng], { icon: createMarkerIcon('attraction') })
-      .bindPopup(`
-        <div style="color:#0A0A18; min-width:160px;">
-          <b>${place.name}</b><br>
-          <small style="color:#555;">${place.type || 'Attraction'}</small>
-        </div>
-      `)
-      .addTo(markersLayer);
-    bounds.push([place.lat, place.lng]);
-  });
-
-  // Hotels
-  (mapData.hotels || []).forEach(place => {
-    if (!place.lat || !place.lng) return;
-    L.marker([place.lat, place.lng], { icon: createMarkerIcon('hotel') })
-      .bindPopup(`<div style="color:#0A0A18;"><b>🏨 ${place.name}</b><br><small>Accommodation</small></div>`)
-      .addTo(markersLayer);
-    bounds.push([place.lat, place.lng]);
-  });
-
-  // Restaurants
-  (mapData.restaurants || []).forEach(place => {
-    if (!place.lat || !place.lng) return;
-    L.marker([place.lat, place.lng], { icon: createMarkerIcon('restaurant') })
-      .bindPopup(`<div style="color:#0A0A18;"><b>🍽️ ${place.name}</b><br><small>${place.cuisine || 'Restaurant'}</small></div>`)
-      .addTo(markersLayer);
-    bounds.push([place.lat, place.lng]);
-  });
-
-  // Scenic Spots
-  (mapData.scenicSpots || []).forEach(place => {
-    if (!place.lat || !place.lng) return;
-    L.marker([place.lat, place.lng], { icon: createMarkerIcon('scenic') })
-      .bindPopup(`<div style="color:#0A0A18;"><b>📸 ${place.name}</b><br><small>Scenic Spot</small></div>`)
-      .addTo(markersLayer);
-    bounds.push([place.lat, place.lng]);
-  });
 
   // Fit bounds
   if (bounds.length > 1) {

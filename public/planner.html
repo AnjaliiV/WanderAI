@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/planner.css">
 
+  <!-- Theme Manager -->
+  <script src="/js/theme.js"></script>
+
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
@@ -30,6 +33,7 @@
       <a href="/explore.html">Explore</a>
       <a href="/community.html">Community</a>
       <a href="/">Sign In</a>
+      <button class="theme-toggle-btn theme-toggle-icon" onclick="window.toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">☀️</button>
     </div>
   </div>
 </nav>
@@ -312,12 +316,6 @@
           <div class="plan-card-body" style="padding:0;">
             <div class="map-container">
               <div id="plan-map"></div>
-              <div class="map-legend">
-                <div class="legend-item"><div class="legend-dot" style="background:#6C63FF;"></div>Attractions</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#06D6A0;"></div>Hotels</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#FF6B6B;"></div>Restaurants</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#FFD166;"></div>Scenic Spots</div>
-              </div>
             </div>
           </div>
         </div>
@@ -425,11 +423,10 @@
         <div class="save-trip-banner">
           <div>
             <div class="save-trip-text">✅ Trip Plan Ready!</div>
-            <div class="save-trip-sub">Your plan has been saved. Share it or plan another trip.</div>
+            <div class="save-trip-sub">Your plan has been saved. Share it with your friends.</div>
           </div>
           <div style="display:flex;gap:1rem;flex-wrap:wrap;">
             <button class="btn btn-secondary" id="save-trip-btn">💾 Save Trip</button>
-            <button class="btn btn-primary" id="new-plan-btn-2" onclick="document.getElementById('new-plan-btn').click()">✈️ Plan Another Trip</button>
           </div>
         </div>
 

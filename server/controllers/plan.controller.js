@@ -62,7 +62,7 @@ async function planTrip(req, res, next) {
     const aiPlan = await generateTripPlan({ destination, places, routes, weather, userPrefs });
 
     // ── Step 4: Validate & merge real data ────────────────────────────────
-    const finalPlan = validateAndMerge(aiPlan, { destination, places, routes, weather });
+    const finalPlan = validateAndMerge(aiPlan, { destination, places, routes, weather, userPrefs });
 
     // ── Step 5: Save trip to DB ───────────────────────────────────────────
     let tripId = null;

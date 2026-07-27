@@ -16,6 +16,9 @@
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/landing.css">
 
+  <!-- Theme Manager (load early to prevent FOUC) -->
+  <script src="/js/theme.js"></script>
+
   <!-- Open Graph -->
   <meta property="og:title" content="AI Trip Planner">
   <meta property="og:description" content="Plan perfect trips with AI — itineraries, packing lists, transport routes and more.">
@@ -39,6 +42,7 @@
       <a href="/explore.html">Explore</a>
       <a href="/community.html">Community</a>
       <a href="/">Sign In</a>
+      <button class="theme-toggle-btn theme-toggle-icon" onclick="window.toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">☀️</button>
     </div>
     <a href="/planner.html" class="btn-primary btn-sm" id="plan-nav-cta" style="border-radius: var(--radius-md); padding: 0.5rem 1rem; text-decoration: none; display: inline-flex; font-weight: 600;">
       ✈️ Plan Now

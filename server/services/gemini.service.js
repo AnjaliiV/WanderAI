@@ -14,6 +14,8 @@ async function generateTripPlan({ destination, places, routes, weather, userPref
   const days = calculateDays(userPrefs.startDate, userPrefs.endDate);
   const prompt = buildPrompt({ destination, places, routes, weather, userPrefs, days });
 
+  let text = '';
+  let cleanText = '';
   try {
     const res = await fetch(`${GEMINI_BASE}?key=${apiKey}`, {
       method: 'POST',
@@ -31,7 +33,7 @@ async function generateTripPlan({ destination, places, routes, weather, userPref
           { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
         ],
       }),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(120000),
     });
 
     if (!res.ok) {
@@ -43,18 +45,27 @@ async function generateTripPlan({ destination, places, routes, weather, userPref
     }
 
     const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error('Empty response from Gemini');
 
-    let cleanText = text.trim();
-    const match = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
-    if (match) {
-      cleanText = match[1].trim();
+    cleanText = text.trim();
+    const firstBrace = cleanText.indexOf('{');
+    const lastBrace = cleanText.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
+      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
     }
 
     return JSON.parse(cleanText);
   } catch (err) {
-    if (err instanceof SyntaxError) throw new Error('Gemini returned invalid JSON. Retry.');
+    if (err instanceof SyntaxError) {
+      console.error('JSON Parse Error details:', err.message);
+      console.error('Failed JSON string:', cleanText);
+      // Let's also check if it's truncated
+      if (cleanText.length > 0 && cleanText[cleanText.length - 1] !== '}') {
+        console.error('JSON string might be truncated.');
+      }
+      throw new Error('Gemini returned invalid JSON. Retry.');
+    }
     throw err;
   }
 }
@@ -80,10 +91,11 @@ function buildPrompt({ destination, places, routes, weather, userPrefs, days }) 
 - Use ONLY the verified real data provided below. Do NOT invent, add, or modify any place names, hotel names, restaurant names, phone numbers, or prices.
 - If the real data has few places, work with what's provided — do not add fictional alternatives.
 - Structure the itinerary using ONLY the attractions listed in REAL_ATTRACTIONS.
-- Hotel recommendations must come ONLY from REAL_HOTELS (use generic "local homestay" / "guesthouse" if list is empty).
+- Ignore the REAL_HOTELS list. Your accommodation recommendations MUST ONLY CONTAIN exactly ONE option literally named "Local Homestay" for EVERY destination. Provide a realistic price, description, and features for it.
 - Restaurant recommendations must come ONLY from REAL_RESTAURANTS.
 - Emergency numbers are provided — do NOT change them.
 - NEVER show a total budget that excludes the cost of reaching the destination and returning home. The budget breakdown MUST include round-trip intercity transport based on the provided transport modes.
+- The "total" in "budgetBreakdown" MUST EXACTLY MATCH the user's maximum budget (₹${userPrefs.budgetMax}). You must adjust the categories (accommodation, food, transport, activities, miscellaneous) so their sum equals EXACTLY ₹${userPrefs.budgetMax}.
 - WanderAI currently supports travel destinations within India only. Ensure all recommendations, attractions, hotels, restaurants, transport routes, weather, maps, hidden gems, and itineraries remain strictly within India.
 
 ## DESTINATION
@@ -288,9 +300,10 @@ Return ONLY a raw JSON object with this exact schema (no markdown, no backticks)
     if (!text) throw new Error('Empty response from Gemini');
     
     let cleanText = text.trim();
-    const match = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
-    if (match) {
-      cleanText = match[1].trim();
+    const firstBrace = cleanText.indexOf('{');
+    const lastBrace = cleanText.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
+      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
     }
 
     return JSON.parse(cleanText);

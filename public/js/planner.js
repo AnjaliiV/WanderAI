@@ -546,21 +546,6 @@ function renderFood(foodGuide) {
       </div>
     ` : ''}
 
-    ${foodGuide.restaurants?.length ? `
-      <h4 style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin:1.5rem 0 1rem;">🏪 Where to Eat</h4>
-      <div class="restaurants-list">
-        ${foodGuide.restaurants.map(r => `
-          <div class="restaurant-item">
-            <div>
-              <div class="restaurant-name">${r.name}</div>
-              <div class="restaurant-meta">${r.cuisine || ''} ${r.specialty ? '· ' + r.specialty : ''}</div>
-            </div>
-            <div class="restaurant-price">${r.priceRange || ''}</div>
-          </div>
-        `).join('')}
-      </div>
-    ` : ''}
-
     ${foodGuide.foodTips?.length ? `
       <div style="margin-top:1.5rem;">
         ${foodGuide.foodTips.map(t => `<div class="overview-tip"><span class="tip-icon">🍴</span>${t}</div>`).join('')}

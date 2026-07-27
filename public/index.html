@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Authentication - AI Trip Planner</title>
   <link rel="stylesheet" href="/css/global.css">
+  <script src="/js/theme.js"></script>
   <style>
     /* ── Dark Navy/Purple Theme for Auth ───────────────────────────── */
     :root {
@@ -226,6 +227,13 @@
       margin-top: 0.5rem;
       display: none;
     }
+    
+    .theme-toggle-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body>
@@ -261,7 +269,6 @@
         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
           <input type="checkbox" id="si-remember" checked> Remember me
         </label>
-        <a href="#">Forgot password?</a>
       </div>
       
       <div id="si-error" class="error-msg"></div>
@@ -337,6 +344,35 @@
     formSignup.style.display = 'block';
     formSignin.style.display = 'none';
   });
+
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    // Add some basic styling since it might be missing
+    toast.style.padding = '12px 20px';
+    toast.style.margin = '8px';
+    toast.style.borderRadius = '8px';
+    toast.style.color = '#fff';
+    toast.style.background = type === 'error' ? '#ef4444' : '#10b981';
+    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    toast.style.transition = 'opacity 0.3s ease';
+    toast.style.zIndex = '9999';
+    
+    container.style.position = 'fixed';
+    container.style.top = '20px';
+    container.style.right = '20px';
+    container.style.zIndex = '9999';
+
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
 
   function togglePwd(id) {
     const input = document.getElementById(id);
@@ -417,10 +453,18 @@
       // auth-guard.js will handle the redirect once onAuthStateChanged fires
     } catch (err) {
       console.error(err);
-      let msg = 'Authentication failed.';
+      let msg = err.message || 'Authentication failed.';
       if (err.code === 'auth/email-already-in-use') msg = 'Email is already registered.';
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
-      showToast(msg, 'error');
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials') msg = 'Invalid email or password.';
+      
+      const isCreate = action === 'create';
+      const errEl = document.getElementById(isCreate ? 'su-error' : 'si-error');
+      if (errEl) {
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+      } else {
+        showToast(msg, 'error');
+      }
     }
   }
 </script>
