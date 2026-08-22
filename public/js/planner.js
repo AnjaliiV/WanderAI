@@ -252,7 +252,7 @@ function renderPlan(result) {
   renderSafety(plan.safetyInfo);
   renderHiddenGems(plan.hiddenGems);
   renderLocalPhrases(plan.localPhrases);
-  setupSaveTripButton(result.tripId, dest.name);
+  setupSaveTripButton(result.tripId, dest.name, plan);
 }
 
 function renderDestHeader(dest, plan) {
@@ -692,7 +692,7 @@ function renderLocalPhrases(phrases) {
   `;
 }
 
-function setupSaveTripButton(tripId, destName) {
+function setupSaveTripButton(tripId, destName, planData) {
   const btn = document.getElementById('save-trip-btn');
   if (!btn) return;
 
@@ -721,9 +721,10 @@ function setupSaveTripButton(tripId, destName) {
       newBtn.disabled = true;
 
       const user = firebaseAuth.currentUser;
+      const sanitizedPlan = JSON.parse(JSON.stringify(planData)); // Remove any undefined values
       await firebaseFirestore.collection('users').doc(user.uid).collection('trips').add({
         destination: destName,
-        plan: currentPlan.plan,
+        plan: sanitizedPlan,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
@@ -732,7 +733,7 @@ function setupSaveTripButton(tripId, destName) {
       showToast('Trip successfully saved to your account!', 'success');
     } catch (e) {
       console.error('Error saving trip:', e);
-      showToast('Failed to save trip.', 'error');
+      showToast(`Failed to save trip: ${e.message}`, 'error');
       newBtn.textContent = '💾 Save Trip';
       newBtn.disabled = false;
     }
